@@ -67,33 +67,25 @@ namespace Griddler.PuzzleModel
 
         public void Solve()
         {
-            SolveMakeSections();
+            SolveUpdateSections();
             SolveFillSections();
             SolveFillDots();
             SolveCheckComplete();
         }
 
-        public void OriginalCalculateFirstLast()
+        private void SolveUpdateSections()
         {
-            var start = 0;
-            var end = Length - 1;
             foreach (Clue clue in OpenClues)
             {
-                clue.First = Cells[start];
-                start += clue.Value + 1;
-            }
-            foreach (Clue clue in OpenClues.AsEnumerable().Reverse())
-            {
-                clue.Last = Cells[end];
-                end -= clue.Value + 1;
+                clue.UpdateSections();
             }
         }
 
-        public void Reset()
+        private void SolveFillSections()
         {
-            foreach (Clue clue in Clues)
+            foreach (Clue clue in OpenClues)
             {
-                clue.Reset();
+                clue.FillSections();
             }
         }
 
@@ -128,27 +120,35 @@ namespace Griddler.PuzzleModel
             }
         }
 
-        private void SolveFillSections()
-        {
-            foreach (Clue clue in OpenClues)
-            {
-                clue.FillSections();
-            }
-        }
-
         private void SolveCheckComplete()
         {
             foreach (Clue clue in OpenClues)
             {
-                clue.CheckComplete();
+                clue.CompleteAny();
             }
         }
 
-        private void SolveMakeSections()
+        public void OriginalCalculateFirstLast()
         {
+            var start = 0;
+            var end = Length - 1;
             foreach (Clue clue in OpenClues)
             {
-                clue.UpdateSections();
+                clue.First = Cells[start];
+                start += clue.Value + 1;
+            }
+            foreach (Clue clue in OpenClues.AsEnumerable().Reverse())
+            {
+                clue.Last = Cells[end];
+                end -= clue.Value + 1;
+            }
+        }
+
+        public void Reset()
+        {
+            foreach (Clue clue in Clues)
+            {
+                clue.Reset();
             }
         }
     }

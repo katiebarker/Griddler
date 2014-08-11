@@ -55,19 +55,7 @@ namespace Griddler.PuzzleModel
             }
         }
 
-        private List<List<Cell>> possSections;
-
-        public List<List<Cell>> PossSections
-        {
-            get
-            {
-                return possSections;
-            }
-            set
-            {
-                possSections = value;
-            }
-        }
+        public List<List<Cell>> PossSections { get; set; }        
 
         internal Clue PreviousClue
         {
@@ -129,10 +117,6 @@ namespace Griddler.PuzzleModel
         public int Start
         {
             get { return Key(First); }
-            //set
-            //{
-            //    First = OwnerLine.Cells[value];
-            //}
         }
 
         public int End
@@ -142,83 +126,35 @@ namespace Griddler.PuzzleModel
 
         public bool IsComplete { get; private set; }
 
-        //public void CalculateEnds()
-        //{
-        //    Start += PossCells.FindIndex(cell => cell.Value != -1);
-        //    End -= PossCells.AsEnumerable().Reverse().ToList().FindIndex(cell => cell.Value != -1);
-        //}
-
-        public void Complete(IEnumerable<Cell> finalCells)
+        public void UpdateSections()
         {
-            finalCells = finalCells.OrderBy(c => c.Key.X).OrderBy(c => c.Key.Y);
-            int first = Key(finalCells.First());
-            int last = Key(finalCells.Last());
-            foreach (Cell cell in finalCells)
+            CompleteAny();
+            var sections = new List<List<Cell>>();
+            var section = new List<Cell>();
+            foreach (var cell in PossCells)
             {
-                cell.UpdateCell(1);
-                cell.Claim(this);
-            }
-            if (first > 0) OwnerLine.Cells[first - 1].UpdateCell(-1);
-            if (last + 1 < OwnerLine.Length) OwnerLine.Cells[last + 1].UpdateCell(-1);
-            IsComplete = true;
-        }
-
-        public void CheckComplete()
-        {
-            //right number of poss cells
-            if (End - Start == Value)
-            {
-                Complete(PossCells);
-                return;
-            }
-
-            //right number of filled availiable cells
-            var x = PossCells.FirstOrDefault(c => (c.Value == 1 && c.IsAvaliable(this) && c.IsOnlyClue(this)));
-            if (x != null)
-            {
-                List<Cell> cells = new List<Cell>();
-                cells.Add(x);
-
-                for (int i = Key(x) - 1; i > 0; i--)
+                if (cell.Value != -1 && cell.IsAvaliable(this))
                 {
-                    var cell = PossCells.SingleOrDefault(c => Key(c) == i);
-                    if (cell != null && cell.Value == 1)
+                    section.Add(cell);
+                }
+                else
+                {
+                    if (section.Count >= Value)
                     {
-                        if (!cell.IsAvaliable(this))
-                        {
-                            throw new Exception("Trying to claim unavailiable cell");
-                        }
-                        cells.Add(cell);
+                        sections.Add(section);
                     }
-                    else break;
-                }
-                for (int i = Key(x) +1; i < OwnerLine.Length; i++)
-                {
-                    var cell = PossCells.SingleOrDefault(c => Key(c) == i);
-                    if (cell != null && cell.Value == 1)
-                    {
-                        if (!cell.IsAvaliable(this))
-                        {
-                            throw new Exception("Trying to claim unavailiable cell");
-                        }
-                        cells.Add(cell);
-                    }
-                    else break;
-                }
-
-                if (cells.Count == Value)
-                {
-                    Complete(cells);
+                    section = new List<Cell>();
                 }
             }
-        }
-
-        public void CheckClaimed()
-        {
-            foreach (var cell in PossCells.Where(cell => cell.IsOnlyClue(this) && cell.Value == 1))
+            if (section.Count >= Value)
             {
-                cell.Claim(this);
+                sections.Add(section);
             }
+            if (sections.Count == 0)
+            {
+                throw new Exception(String.Format("No room for clue: {0} {1}", OwnerLine.Key, OwnerLine.IsRow));
+            }
+            PossSections = sections;
         }
 
         public void FillSections()
@@ -305,47 +241,80 @@ namespace Griddler.PuzzleModel
             
         }
 
-        public void UpdateSections()
+        public void CompleteAny()
         {
-            CheckComplete();
-            var sections = new List<List<Cell>>();
-            var section = new List<Cell>();
-            foreach (var cell in PossCells)
+            //right number of poss cells
+            if (End - Start == Value)
             {
-                if (cell.Value != -1 && cell.IsAvaliable(this))
+                Complete(PossCells);
+                return;
+            }
+
+            //Find filled confirmed clue + all filled consecutive
+            var x = PossCells.FirstOrDefault(c => (c.Value == 1 && c.IsAvaliable(this) && c.IsOnlyClue(this)));
+            if (x != null)
+            {
+                List<Cell> cells = new List<Cell>();
+                cells.Add(x);
+
+                for (int i = Key(x) - 1; i > 0; i--)
                 {
-                    section.Add(cell);
-                }
-                else
-                {
-                    if (section.Count >= Value)
+                    var cell = PossCells.SingleOrDefault(c => Key(c) == i);
+                    if (cell != null && cell.Value == 1)
                     {
-                        sections.Add(section);
+                        if (!cell.IsAvaliable(this))
+                        {
+                            throw new Exception("Trying to claim unavailiable cell");
+                        }
+                        cells.Add(cell);
                     }
-                    section = new List<Cell>();
+                    else break;
+                }
+                for (int i = Key(x) +1; i < OwnerLine.Length; i++)
+                {
+                    var cell = PossCells.SingleOrDefault(c => Key(c) == i);
+                    if (cell != null && cell.Value == 1)
+                    {
+                        if (!cell.IsAvaliable(this))
+                        {
+                            throw new Exception("Trying to claim unavailiable cell");
+                        }
+                        cells.Add(cell);
+                    }
+                    else break;
+                }
+
+                //Complete if right number of filled cells
+                if (cells.Count == Value)
+                {
+                    Complete(cells);
                 }
             }
-            if (section.Count >= Value)
-            {
-                sections.Add(section);
-            }
-            if (sections.Count == 0)
-            {
-                throw new Exception(String.Format("zero section: {0} {1}", OwnerLine.Key, OwnerLine.IsRow));
-            }
-            PossSections = sections;
         }
 
-        //public void AdjustEnds()
-        //{
-        //    var index = OwnerLine.Clues.IndexOf(this);
+        public void Complete(IEnumerable<Cell> finalCells)
+        {
+            finalCells = finalCells.OrderBy(c => c.Key.X).OrderBy(c => c.Key.Y);
+            int first = Key(finalCells.First());
+            int last = Key(finalCells.Last());
+            foreach (Cell cell in finalCells)
+            {
+                cell.UpdateCell(1);
+                cell.Claim(this);
+            }
+            if (first > 0) OwnerLine.Cells[first - 1].UpdateCell(-1);
+            if (last + 1 < OwnerLine.Length) OwnerLine.Cells[last + 1].UpdateCell(-1);
+            IsComplete = true;
+        }
 
-        //    if (var previous = OwnerLine.Clues.ElementAt(index - 1) != null)
-        //    {
-
-        //    }
-        //}
-
+        public void ClaimAny()
+        {
+            foreach (var cell in PossCells.Where(cell => cell.IsOnlyClue(this) && cell.Value == 1))
+            {
+                cell.Claim(this);
+            }
+        }
+        
         public void Reset()
         {
             PossSections = new List<List<Cell>>();

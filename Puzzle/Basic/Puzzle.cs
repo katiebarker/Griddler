@@ -89,6 +89,8 @@ namespace Griddler.PuzzleModel
             return clueList;
         }
 
+        
+        
         public string GetRowClues(int row)
         {
             var clueValues = Lines[row].Clues.Select(c => c.Value.ToString()).ToList();

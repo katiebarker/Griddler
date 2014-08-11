@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
-using Griddler.PuzzleModel;
+﻿using System.Windows.Forms;
 
 namespace Griddler.Solver
 {
@@ -173,10 +171,6 @@ namespace Griddler.Solver
         private System.Windows.Forms.Label columnLabel;
         private System.Windows.Forms.Button testButton;
         private System.Windows.Forms.ComboBox chooseTest;
-        private Dictionary<int, PictureBox> Boxes;
-        private Dictionary<int, TextBox> rowTextBoxs;
-        private Dictionary<int, TextBox> columnTextBoxs;
-        private Dictionary<string, Puzzle> testPuzzles;
         private NumericUpDown rowNumerator;
         private NumericUpDown columnNumerator;
         private Label label1;
