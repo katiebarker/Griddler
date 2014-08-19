@@ -37,7 +37,6 @@ namespace Griddler.Solver
             this.chooseTest = new System.Windows.Forms.ComboBox();
             this.rowNumerator = new System.Windows.Forms.NumericUpDown();
             this.columnNumerator = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.rowNumerator)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.columnNumerator)).BeginInit();
             this.SuspendLayout();
@@ -134,20 +133,11 @@ namespace Griddler.Solver
             0});
             this.columnNumerator.ValueChanged += new System.EventHandler(this.numColumns_ValueChanged);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(507, 113);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 13);
-            this.label1.TabIndex = 21;
-            // 
             // SolverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(660, 323);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.columnNumerator);
             this.Controls.Add(this.rowNumerator);
             this.Controls.Add(this.chooseTest);
@@ -173,7 +163,6 @@ namespace Griddler.Solver
         private System.Windows.Forms.ComboBox chooseTest;
         private NumericUpDown rowNumerator;
         private NumericUpDown columnNumerator;
-        private Label label1;
     }
 }
 

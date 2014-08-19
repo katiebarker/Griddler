@@ -51,11 +51,11 @@ namespace Griddler.PuzzleModel
                         cells.Add(cell);
                     }
                 }
-                return cells;
+                return cells.OrderBy(c => c.Key.X).OrderBy(c => c.Key.Y).ToList();
             }
         }
 
-        public List<List<Cell>> PossSections { get; set; }        
+        public List<List<Cell>> PossSections { get; set; }
 
         internal Clue PreviousClue
         {
@@ -79,10 +79,10 @@ namespace Griddler.PuzzleModel
 
             set
             {
-                if (!PossCells.Contains(value)) throw new Exception("Invalid cell");
-                var section = PossSections.Single(s => s.Contains(value));
-
-                section.RemoveAll(cell => OwnerLine.Cells.IndexOf(cell) < OwnerLine.Cells.IndexOf(value));
+                foreach (var sect in PossSections)
+                {
+                    sect.RemoveAll(cell => OwnerLine.Cells.IndexOf(cell) < OwnerLine.Cells.IndexOf(value));
+                }
             }
         }
 
@@ -91,10 +91,10 @@ namespace Griddler.PuzzleModel
             get { return PossCells.Last(); }
             set
             {
-                if (!PossCells.Contains(value)) throw new Exception("Invalid cell");
-                var section = PossSections.Single(s => s.Contains(value));
-
-                section.RemoveAll(cell => OwnerLine.Cells.IndexOf(cell) > OwnerLine.Cells.IndexOf(value));
+                foreach (var section in PossSections)
+                {
+                    section.RemoveAll(cell => OwnerLine.Cells.IndexOf(cell) > OwnerLine.Cells.IndexOf(value));
+                }
             }
         }
 
@@ -102,7 +102,7 @@ namespace Griddler.PuzzleModel
         {
             get
             {
-                return OwnerLine.Cells.ElementAt<Cell>(Key(First) + Value);
+                return OwnerLine.Cells.ElementAt(Key(First) + Value);
             }
         }
 
@@ -110,13 +110,14 @@ namespace Griddler.PuzzleModel
         {
             get
             {
-                return OwnerLine.Cells.ElementAt<Cell>(Key(Last) - Value);
+                return OwnerLine.Cells.ElementAt(Key(Last) - Value);
             }
         }
 
         public int Start
         {
             get { return Key(First); }
+            set { First = OwnerLine.Cells[value]; }
         }
 
         public int End
@@ -150,11 +151,21 @@ namespace Griddler.PuzzleModel
             {
                 sections.Add(section);
             }
+
             if (sections.Count == 0)
             {
                 throw new Exception(String.Format("No room for clue: {0} {1}", OwnerLine.Key, OwnerLine.IsRow));
             }
             PossSections = sections;
+            UpdateEnds();
+        }
+
+        public void UpdateEnds()
+        {
+            if (PreviousClue != null)
+                First = OwnerLine.Cells[Key(PreviousClue.FirstEnd) + 1];
+            if (NextClue != null)
+                Last = OwnerLine.Cells[Key(NextClue.LastEnd) - 1];
         }
 
         public void FillSections()
@@ -238,7 +249,7 @@ namespace Griddler.PuzzleModel
                         cell.UpdateCell(-1);
                     }
                 }
-            
+
         }
 
         public void CompleteAny()
@@ -270,7 +281,7 @@ namespace Griddler.PuzzleModel
                     }
                     else break;
                 }
-                for (int i = Key(x) +1; i < OwnerLine.Length; i++)
+                for (int i = Key(x) + 1; i < OwnerLine.Length; i++)
                 {
                     var cell = PossCells.SingleOrDefault(c => Key(c) == i);
                     if (cell != null && cell.Value == 1)
@@ -314,7 +325,7 @@ namespace Griddler.PuzzleModel
                 cell.Claim(this);
             }
         }
-        
+
         public void Reset()
         {
             PossSections = new List<List<Cell>>();

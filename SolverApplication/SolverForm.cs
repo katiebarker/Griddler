@@ -248,17 +248,18 @@ namespace Griddler.Solver
         {
             //try
             //{
-            var lineString = "";
+            var rowString = "";
             foreach (var box in rowTextBoxs)
             {
-                lineString += box.Value.Text + ";";
+                rowString += box.Value.Text + ";";
             }
+            var colString = "";
             foreach (var box in rowTextBoxs)
             {
-                lineString += box.Value.Text + ";";
+                colString += box.Value.Text + ";";
             }
 
-            var puzzle = new Puzzle(numberOfRows, numberOfColumns, lineString);
+            var puzzle = new Puzzle(numberOfRows, numberOfColumns, rowString, colString);
 
             puzzle.Solve();
             UpdateDisplay(puzzle);

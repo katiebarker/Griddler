@@ -31,30 +31,30 @@ namespace Griddler.PuzzleModel
             CheckTotal();
         }
 
-        public Puzzle(int width, int height, string clues)
-            : this(width, height, StringToList(clues))
+        public Puzzle(int width, int height, string rowClues, string colClues)
+            : this(width, height, StringToList(rowClues),StringToList(colClues))
         {
         }
 
-        public Puzzle(int width, int height, List<int[]> clues)
-            : this(width, height, ToLines(width, height, clues))
+        public Puzzle(int width, int height, List<int[]> rowClues, List<int[]> colClues)
+            : this(width, height, ToLines(width, height, rowClues,colClues))
         {
         }
-        
-        private static List<Line> ToLines(int width, int height, List<int[]> clues)
+
+        private static List<Line> ToLines(int width, int height, List<int[]> rowClues, List<int[]> colClues)
         {
-            if (clues.Count != width + height)
+            if (colClues.Count != width && rowClues.Count != height)
             {
                 throw new Exception("Invalid clues for puzzle");
             }
             var lines = new List<Line>();
             for (var i = 0; i < height; i++)
             {
-                lines.Add(new Row(clues[i].ToList(), i));
+                lines.Add(new Row(rowClues[i].ToList(), i));
             }
             for (var i = 0; i < width; i++)
             {
-                lines.Add(new Column(clues[height + i].ToList(), i));
+                lines.Add(new Column(colClues[i].ToList(), i));
             }
             return lines;
         }
