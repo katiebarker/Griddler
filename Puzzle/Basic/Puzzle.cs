@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Griddler.PuzzleModel.Basic;
 
 namespace Griddler.PuzzleModel
 {
@@ -45,7 +46,7 @@ namespace Griddler.PuzzleModel
         {
             if (colClues.Count != width && rowClues.Count != height)
             {
-                throw new Exception("Invalid clues for puzzle");
+                throw new InvalidPuzzleException("Invalid clues for puzzle");
             }
             var lines = new List<Line>();
             for (var i = 0; i < height; i++)
@@ -87,9 +88,7 @@ namespace Griddler.PuzzleModel
                 }
             }
             return clueList;
-        }
-
-        
+        }        
         
         public string GetRowClues(int row)
         {
@@ -159,6 +158,7 @@ namespace Griddler.PuzzleModel
                     continue;
                 }
                 break;
+                
             }
         }
 
@@ -175,5 +175,18 @@ namespace Griddler.PuzzleModel
         }
 
         public bool Changed { get; set; }
+
+        public int NumFilledCells
+        {
+            get
+            {
+                int num = 0;
+                foreach (var row in Lines.OfType<Row>())
+                {
+                    num += row.Cells.Count(c => c.Value != 0);
+                }
+                return num;
+            }
+        }
     }
 }

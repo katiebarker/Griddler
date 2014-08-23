@@ -71,6 +71,7 @@ namespace Griddler.PuzzleModel
             SolveFillSections();
             SolveFillDots();
             SolveCheckComplete();
+            CheckSingular();
         }
 
         private void SolveUpdateSections()
@@ -91,16 +92,8 @@ namespace Griddler.PuzzleModel
 
         private void SolveFillDots()
         {
-            var newCells = new List<Cell>();
-            foreach (Cell cell in OpenClues.SelectMany(clue => clue.PossCells.Where(cell => !newCells.Contains(cell))))
-            {
-                newCells.Add(cell);
-            }
-            foreach (Cell cell in Cells.Where(cell => !newCells.Contains(cell) && (cell.Value == 0)))
-            {
-                cell.UpdateCell(-1);
-            }
             var cells = new List<Cell>();
+            //Find all blank cells which have a possible clue
             foreach (Clue clue in Clues.Where(c => c.PossSections.Count != 0))
             {
                 foreach (var section in clue.PossSections)
@@ -114,6 +107,7 @@ namespace Griddler.PuzzleModel
                     }
                 }
             }
+            //Fill all blank cells with no possible clue
             foreach (Cell cell in Cells.Where(cell => !cells.Contains(cell) && cell.Value == 0))
             {
                 cell.UpdateCell(-1);
@@ -125,6 +119,14 @@ namespace Griddler.PuzzleModel
             foreach (Clue clue in OpenClues)
             {
                 clue.CompleteAny();
+            }
+        }
+
+        private void CheckSingular()
+        {
+            foreach (var clue in OpenClues)
+            {
+                clue.ClaimAny();
             }
         }
 

@@ -76,7 +76,7 @@ namespace Griddler.PuzzleModel
             {
                 if (Value != newValue)
                 {
-                    throw new Exception(String.Format("Conflict of Solution: ({0}, {1})", Key.X +1, Key.Y+1));
+                    throw new Exception(String.Format("Conflict of Solution: ({0}, {1})", Key.X + 1, Key.Y + 1));
                 }
             }
         }

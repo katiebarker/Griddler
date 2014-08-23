@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Basic\Cell.cs" />
     <Compile Include="Basic\Column.cs" />
+    <Compile Include="Basic\InvalidPuzzleException.cs" />
     <Compile Include="Basic\Pair.cs" />
     <Compile Include="Basic\PuzzleFactory.cs" />
     <Compile Include="Interfaces\ICell.cs" />

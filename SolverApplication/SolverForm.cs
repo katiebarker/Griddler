@@ -9,7 +9,8 @@ namespace Griddler.Solver
 {
     public partial class SolverForm : Form
     {
-        private const int gridSize = 20;
+        private const int gridSize = 16;
+        private readonly Point start = new Point(80, 80);
         private readonly List<Shape> gridLines;
         private readonly List<Label> labels;
         private Dictionary<Point, PictureBox> boxes;
@@ -26,6 +27,12 @@ namespace Griddler.Solver
             rowTextBoxs = new Dictionary<int, TextBox>();
             columnTextBoxs = new Dictionary<int, TextBox>();
 
+            boxes = new Dictionary<Point, PictureBox>();
+            gridLines = new List<Shape>();
+            labels = new List<Label>();
+
+            InitializeComponent();
+
             for (int i = 0; i < numberOfRows; i++)
             {
                 AddTextBox(true, i);
@@ -35,12 +42,6 @@ namespace Griddler.Solver
             {
                 AddTextBox(false, i);
             }
-
-            boxes = new Dictionary<Point, PictureBox>();
-            gridLines = new List<Shape>();
-            labels = new List<Label>();
-
-            InitializeComponent();
 
             testPuzzles = TestPuzzles.Puzzles;
 
@@ -85,83 +86,94 @@ namespace Griddler.Solver
 
         private void AddLabel(Puzzle puzzle, bool isRow, int num)
         {
-            string type = isRow ? "hori" : "vert";
-            int x = isRow ? 400 : 400 + gridSize * num;
-            int y = isRow ? 100 + gridSize * num : 100;
-            string name = String.Format("{0}Label{1}", type, num);
+            Point p = start;
+            string type;
+            string clues;
+            if (isRow)
+            {
+                clues = puzzle.GetRowClues(num);
+                type = "hori";
+            }
+            else
+            {
+                clues = puzzle.GetColumnClues(num);
+                type = "vert";
+            }
 
-            var clues = isRow ? puzzle.GetRowClues(num) : puzzle.GetColumnClues(num);
+            string name = String.Format("{0}Label{1}", type, num);
 
             Label label;
 
-            if (Controls.ContainsKey(name))
+            if (this.solutionPanel.Controls.ContainsKey(name))
             {
-                label = (Label)Controls[name];
+                label = (Label)this.solutionPanel.Controls[name];
                 label.Show();
             }
             else
             {
                 label = new Label
                 {
-                    Text = clues,
-                    Location = new Point(x, y),
                     Name = name,
                     Font = new Font("Microsoft Sans Serif", 7),
-
+                    AutoSize = true
                 };
-                Controls.Add(label);
+
+                this.solutionPanel.Controls.Add(label);
             }
+
             label.Text = clues;
-            label.AutoSize = true;
             labels.Add(label);
-            label.Location = isRow ? new Point(x - label.Width - 5, y + 3) : new Point(x + 3, y - label.Height - 5);
+
+            if (isRow)
+            {
+                p.Offset(-label.Width - 5, gridSize * num + 3);
+            }
+            else
+            {
+                p.Offset(gridSize * num + 3, -label.Height - 5);
+            }
+
+            label.Location = p;
         }
 
         private void AddGridLine(Puzzle puzzle, bool isRow, int num)
         {
-            var p = new Point(400, 100);
-            var s = new Size(1, 1);
+            var location = start;
+            var size = new Size(1, 1);
+
             if (isRow)
             {
-                p.Y += gridSize * num;
-                s.Width += puzzle.Width * gridSize;
+                location.Y += gridSize * num;
+                size.Width += puzzle.Width * gridSize;
             }
             if (!isRow)
             {
-                p.X += gridSize * num;
-                s.Height += puzzle.Height * gridSize;
+                location.X += gridSize * num;
+                size.Height += puzzle.Height * gridSize;
             }
 
-            AddGridLine(p, s);
-        }
+            Shape gridline;
 
-        private void AddGridLine(Point location, Size size)
-        {
-            if (size.Height != 1 && size.Width != 1)
-            {
-                throw new Exception("Not a line");
-            }
             string type = size.Height == 1 ? "hori" : "vert";
-            string name = String.Format("{0}Gridline_{1}_{2}", type, location.X, location.Y);
-            if (Controls.ContainsKey(name))
+            string name = String.Format("{0}Gridline_{1}", type, num);
+
+            if (this.solutionPanel.Controls.ContainsKey(name))
             {
-                Controls[name].Show();
-                gridLines.Add((Shape)Controls[name]);
-                Controls[name].Size = size;
+                gridline = (Shape)this.solutionPanel.Controls[name];
+                gridline.Show();
             }
             else
             {
-                var gridLine = new Shape
+                gridline = new Shape
                 {
                     Location = location,
-                    Name = name,
-                    ShapeColor = Color.Black,
-                    Size = size
+                    Name = name
                 };
-
-                Controls.Add(gridLine);
-                gridLines.Add(gridLine);
+                gridline.ShapeColor = (num % 5 == 0) ? Color.Black : Color.LightPink;
+                this.solutionPanel.Controls.Add(gridline);
+                gridLines.Add(gridline);
             }
+            gridline.Size = size;
         }
 
         private void RemoveGrid()
@@ -179,110 +191,119 @@ namespace Griddler.Solver
                 label.Hide();
             }
 
-            gridLines.Clear();
+
             boxes.Clear();
         }
 
         private void AddBox(Point p)
         {
             string name = String.Format("square_{0}_{1}", p.X, p.Y);
-            if (Controls.ContainsKey(name))
+            if (this.solutionPanel.Controls.ContainsKey(name))
             {
-                Controls[name].Show();
-                boxes.Add(p, (PictureBox)Controls[name]);
+                this.solutionPanel.Controls[name].Show();
+                boxes.Add(p, (PictureBox)this.solutionPanel.Controls[name]);
             }
             else
             {
                 var square = new PictureBox();
                 boxes.Add(p, square);
-
-                int x = 402 + gridSize * p.Y;
-                int y = 102 + gridSize * p.X;
+                Point q = start;
+                q.X += 2 + gridSize * p.Y;
+                q.Y += 2 + gridSize * p.X;
 
                 square.BackColor = Color.White;
-                square.Location = new Point(x, y);
+                square.Location = q;
                 square.Name = name;
                 square.Size = new Size(gridSize - 3, gridSize - 3);
                 square.TabStop = false;
 
-                Controls.Add(square);
+                this.solutionPanel.Controls.Add(square);
             }
         }
 
         private void AddTextBox(bool isRow, int num)
         {
             string type = isRow ? "row" : "column";
-            Dictionary<int, TextBox> dict = isRow ? rowTextBoxs : columnTextBoxs;
-            int x = isRow ? 47 : 188;
-            int y = 120 + 25 * num;
+            Dictionary<int, TextBox> textBoxes = isRow ? rowTextBoxs : columnTextBoxs;
+            Point p = new Point();
+            p.X = isRow ? 10 : 150;
+            p.Y = 100 + 25 * num;
             string name = String.Format("{0}TextBox{1}", type, num);
-
-            if (Controls.ContainsKey(name))
+            TextBox textBox;
+            if (this.tabPageManual.Controls.ContainsKey(name))
             {
-                Controls[name].Show();
-                dict.Add(num, Controls[name] as TextBox);
+                textBox = this.tabPageManual.Controls[name] as TextBox;
+                textBox.Show();
             }
             else
             {
-                var textBox = new TextBox();
-                dict.Add(num, textBox);
+                textBox = new TextBox()
+                {
+                    Location = p,
+                    Name = name,
+                    Size = new Size(100, 20)
+                };
 
-                textBox.Location = new Point(x, y);
-                textBox.Name = name;
-                textBox.Size = new Size(100, 20);
-
-                Controls.Add(textBox);
+                this.tabPageManual.Controls.Add(textBox);
+                textBoxes.Add(num, textBox);
             }
         }
 
         private void RemoveTextBox(bool isRow, int num)
         {
-            Dictionary<int, TextBox> dict = isRow ? rowTextBoxs : columnTextBoxs;
-            dict[num].Hide();
-            dict.Remove(num);
-        } 
+            Dictionary<int, TextBox> textBoxes = isRow ? rowTextBoxs : columnTextBoxs;
+            textBoxes[num].Hide();
+            textBoxes.Remove(num);
+        }
         #endregion
 
         #region Events
         private void solveButton_Click(object sender, EventArgs e)
         {
-            //try
-            //{
-            var rowString = "";
-            foreach (var box in rowTextBoxs)
+            try
             {
-                rowString += box.Value.Text + ";";
+                var rowString = "";
+                foreach (var box in rowTextBoxs)
+                {
+                    rowString += box.Value.Text + ";";
+                }
+                var colString = "";
+                foreach (var box in rowTextBoxs)
+                {
+                    colString += box.Value.Text + ";";
+                }
+
+                var puzzle = new Puzzle(numberOfRows, numberOfColumns, rowString, colString);
+
+                puzzle.Solve();
+                UpdateDisplay(puzzle);
             }
-            var colString = "";
-            foreach (var box in rowTextBoxs)
+            catch (InvalidPuzzleException ex)
             {
-                colString += box.Value.Text + ";";
+                MessageBox.Show(ex.Message);
             }
-
-            var puzzle = new Puzzle(numberOfRows, numberOfColumns, rowString, colString);
-
-            puzzle.Solve();
-            UpdateDisplay(puzzle);
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}
         }
 
         private void testButton_Click(object sender, EventArgs e)
         {
-            var puzzle = testPuzzles[chooseTest.Text];
-            //try
-            //{
-            puzzle.Solve();
-            //}
-            //catch (Exception ex)
-            //{
-            //MessageBox.Show(ex.Message);
-            //}
+            try
+            {
+                Puzzle puzzle;
+                if (!testPuzzles.TryGetValue(chooseTest.Text, out puzzle))
+                {
+                    throw new InvalidPuzzleException("Select Valid Puzzle from list");
+                }
+                else
+                {
+                    puzzle.Solve();
 
-            UpdateDisplay(puzzle);
+                    UpdateDisplay(puzzle);
+                }
+            }
+            catch (InvalidPuzzleException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void numRows_ValueChanged(object sender, EventArgs e)
@@ -307,7 +328,7 @@ namespace Griddler.Solver
                     RemoveTextBox(false, i);
 
             numberOfColumns = (int)columnNumerator.Value;
-        } 
+        }
         #endregion
     }
 }
