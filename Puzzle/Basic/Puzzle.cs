@@ -135,6 +135,22 @@ namespace Griddler.PuzzleModel
 
         public List<Line> Lines { get; private set; }
 
+        public List<Row> Rows
+        {
+            get
+            {
+                return Lines.OfType<Row>().ToList();
+            }
+        }
+
+        public List<Column> Columns
+        {
+            get
+            {
+                return Lines.OfType<Column>().ToList();
+            }
+        }
+
         public void Solve()
         {
             ResetPuzzle();

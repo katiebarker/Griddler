@@ -3,9 +3,9 @@ using Griddler.PuzzleModel;
 
 namespace Griddler.Solver
 {
-    internal static class TestPuzzles
+    public static class TestPuzzles
     {
-        internal static Dictionary<string, Puzzle> Puzzles
+        public static Dictionary<string, Puzzle> Puzzles
         {
             get
             {

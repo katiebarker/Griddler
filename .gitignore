@@ -5,3 +5,6 @@ PuzzleUnitTest/bin/
 PuzzleUnitTest/obj/
 SolverApplication/bin/
 Solver.v12.suo
+SolverWebApp/obj/
+SolverWebApp/bin/
+Solver.v12.suo

@@ -1,0 +1,33 @@
+﻿table ,td {
+    border:  solid white;
+    border-collapse: collapse;
+    empty-cells: show;
+}
+
+tr
+{
+}
+
+td {
+    width: 16px;
+    height: 16px;
+    background-color: pink;
+}
+
+td:nth-child(5n)
+{
+    border-right: solid grey;
+}
+
+td:first-child
+{
+    border-left: solid grey;
+}
+
+tr:nth-child(5n) td {
+    border-bottom: solid grey;
+}
+
+tr:first-child td {
+    border-top: solid grey;
+}
