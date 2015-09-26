@@ -4,7 +4,7 @@ namespace Griddler.PuzzleModel
 {
     public class  Column : Line
     {
-        public Column(IList<int> clues, int key) : base(clues, key)
+        public Column() : base()
         {
             IsRow = false;
         }

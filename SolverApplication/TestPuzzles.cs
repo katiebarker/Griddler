@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Griddler.PuzzleModel;
-using Griddler.PuzzleModel.Basic;
 
 namespace Griddler.Solver
 {

@@ -34,7 +34,7 @@ namespace Griddler.PuzzleModel
             }
         }
 
-        protected int Key(Cell cell)
+        public int Key(Cell cell)
         {
             return cell.GetKey(OwnerLine);
         }
@@ -135,59 +135,7 @@ namespace Griddler.PuzzleModel
         }
 
         public bool IsComplete { get; private set; }
-
-        public void UpdateSections()
-        {
-            CompleteAny();
-
-            //if (PossSections.Any(l => l.Count < Value) || PossCells.Any(c => c.Value == -1 || c.IsAvaliable(this) == false))
-            {
-                var sections = new List<List<Cell>>();
-                var section = new List<Cell>();
-                foreach (var cell in OwnerLine.Cells)
-                {
-                    if (PossCells.Contains(cell) && cell.Value != -1 && cell.IsAvaliable(this))
-                    {
-                        section.Add(cell);
-                    }
-                    else if (section.Count > 0)
-                    {
-                        if (section.Count >= Value)
-                        {
-                            sections.Add(section);
-                        }
-                        section = new List<Cell>();
-                    }
-                }
-                if (section.Count >= Value)
-                {
-                    sections.Add(section);
-                }
-
-                if (sections.Count == 0)
-                {
-                    throw new Exception(String.Format("No room for clue: {0} {1}", OwnerLine.Key, OwnerLine.IsRow));
-                }
-
-                for (int i = 0; i < sections.Count; i++)
-                {
-                    if (sections.Count != PossSections.Count)
-                    {
-                        OwnerLine.OwnerPuzzle.Changed = true;
-                        break;
-                    }
-                    if (!sections[i].SequenceEqual(PossSections[i]))
-                    {
-                        OwnerLine.OwnerPuzzle.Changed = true;
-                        break;
-                    }
-                }
-
-                PossSections = sections;
-                UpdateEnds();
-            }
-        }
-
+               
         public void UpdateEnds()
         {
             if (PreviousClue != null)
@@ -197,90 +145,7 @@ namespace Griddler.PuzzleModel
 
         }
 
-        public void FillSections()
-        {
-            UpdateSections();
-            foreach (var section in PossSections)
-            {
-                //Section which contains definite filled cell
-                if (
-                    section.Any(
-                        cell =>
-                            (cell.Value == 1) &&
-                            (cell.IsOnlyClue(this) &&
-                            cell.IsAvaliable(this))))
-                {
-                    if (section.Count == Value)
-                    {
-                        Complete(section);
-                        break;
-                    }
-                    if (section.Count < Value)
-                    {
-                        throw new Exception("bad section");
-                    }
-                    if (section.Count > Value)
-                    {
-                        PossSections = new List<List<Cell>> { section };
-                        FillSection(section);
-                    }
-
-                }
-                //If only one section
-                if (PossSections.Count == 1)
-                {
-                    FillSection(section);
-                }
-            }
-        }
-
-        private void FillSection(List<Cell> section)
-        {
-            //Normal Fill
-            foreach (var cell in section)
-            {
-                if (Key(cell) < Key(section.First()) + Value &&
-                    Key(cell) > Key(section.Last()) - Value)
-                {
-                    cell.UpdateCell(1);
-                    cell.Claim(this);
-                }
-            }
-
-            //Extend existing cells
-            //TODO: backwards? and update
-
-            Cell anchorCell = PossCells.FirstOrDefault(c => c.Value == 1 && c.IsOnlyClue(this));
-            if (anchorCell != null)
-                foreach (Cell cell in PossCells)
-                {
-                    if (Key(cell) > Key(anchorCell) && Key(cell) < Start + Value)
-                    {
-                        cell.UpdateCell(1);
-                        cell.Claim(this);
-                    }
-                    if (Key(cell) >= Key(anchorCell) + Value && cell.IsOnlyClue(this))
-                    {
-                        cell.UpdateCell(-1);
-                    }
-                }
-            Cell anchorCell2 = PossCells.LastOrDefault(c => c.Value == 1 && c.IsOnlyClue(this));
-            if (anchorCell2 != null)
-                foreach (Cell cell in PossCells)
-                {
-                    if (Key(cell) < Key(anchorCell2) && Key(cell) > End - Value)
-                    {
-                        cell.UpdateCell(1);
-                        cell.Claim(this);
-                    }
-                    if (Key(cell) <= Key(anchorCell2) - Value && cell.IsOnlyClue(this))
-                    {
-                        cell.UpdateCell(-1);
-                    }
-                }
-
-        }
-
+        
         public void CompleteAny()
         {
             //right number of poss cells

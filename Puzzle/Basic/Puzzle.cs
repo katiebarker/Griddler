@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Griddler.PuzzleModel.Basic;
 
 namespace Griddler.PuzzleModel
 {
     public class Puzzle : IPuzzle
     {
+        public Puzzle(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
 
         public Cell[,] Cells {get; set; }
 

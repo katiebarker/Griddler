@@ -8,21 +8,7 @@ namespace Griddler.PuzzleModel
 {
     public class Cell : ICell
     {
-        public Cell(Row row, Column column)
-        {
-            Row = row;
-            Column = column;
-            Key = new Point(Column.Key, Row.Key);
-
-            if (Row.OwnerPuzzle != Column.OwnerPuzzle)
-            {
-                throw new Exception("Incompatible Row and Column");
-            }
-
-            ConfirmedClues = new Pair<Clue>(null, null);
-        }
-
-        public int Value { get; private set; }
+        public int Value { get; set; }
 
         public string KeyString
         {
@@ -32,9 +18,9 @@ namespace Griddler.PuzzleModel
             }
         }
 
-        public Point Key { get; private set; }
+        public Point Key { get; set; }
 
-        protected Puzzle OwnerPuzzle
+        public Puzzle OwnerPuzzle
         {
             get
             {
@@ -55,31 +41,11 @@ namespace Griddler.PuzzleModel
             throw new Exception("Not a valid owner line");
         }
 
-        public Row Row { get; private set; }
+        public Row Row { get; set; }
 
-        public Column Column { get; private set; }
+        public Column Column { get; set; }
 
-        private readonly Pair<Clue> ConfirmedClues;
-
-        internal void UpdateCell(int newValue)
-        {
-            if (newValue == 0)
-            {
-                return;
-            }
-            if (Value == 0)
-            {
-                Value = newValue;
-                OwnerPuzzle.Changed = true;
-            }
-            else
-            {
-                if (Value != newValue)
-                {
-                    throw new Exception(String.Format("Conflict of Solution: ({0}, {1})", Key.X + 1, Key.Y + 1));
-                }
-            }
-        }
+        public Pair<Clue> ConfirmedClues;
 
         private List<Clue> FindClues(Line line)
         {
@@ -121,6 +87,26 @@ namespace Griddler.PuzzleModel
             {
                 if (ConfirmedClues.Y == null) OwnerPuzzle.Changed = true;
                 ConfirmedClues.Y = clue;
+            }
+        }
+        
+        public void UpdateCell(int newValue)
+        {
+            if (newValue == 0)
+            {
+                return;
+            }
+            if (Value == 0)
+            {
+                Value = newValue;
+                OwnerPuzzle.Changed = true;
+            }
+            else
+            {
+                if (Value != newValue)
+                {
+                    throw new Exception(String.Format("Conflict of Solution: ({0}, {1})", Key.X + 1, Key.Y + 1));
+                }
             }
         }
 

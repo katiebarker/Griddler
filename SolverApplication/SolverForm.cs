@@ -1,5 +1,4 @@
 ﻿using Griddler.PuzzleModel;
-using Griddler.PuzzleModel.Basic;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -275,7 +274,7 @@ namespace Griddler.Solver
 
             var puzzle = PuzzleFactory.Instance().MakePuzzle(numberOfRows, numberOfColumns, rowString, colString);
 
-            if (Griddler.PuzzleModel.Solver.Instance().Solve(puzzle))
+            if (Griddler.PuzzleModel.PuzzleSolver.Instance().Solve(puzzle))
             {
                 UpdateDisplay(puzzle);
             }
@@ -295,7 +294,7 @@ namespace Griddler.Solver
             }
             else
             {
-                if (Griddler.PuzzleModel.Solver.Instance().Solve(puzzle))
+                if (Griddler.PuzzleModel.PuzzleSolver.Instance().Solve(puzzle))
                 {
                     UpdateDisplay(puzzle);
                 }

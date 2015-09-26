@@ -13,18 +13,18 @@ namespace Griddler.Test
         [TestInitialize]
         public void TestSetUp()
         {
-            Puzzle = new Puzzle(5, 5, new List<Line>
+            Puzzle = PuzzleFactory.Instance().MakePuzzle(5, 5, new List<Line>
             {
-                new Row(new[] {1, 1}, 0),
-                new Row(new[] {5}, 1),
-                new Row(new[] {1, 1}, 2),
-                new Row(new[] {5}, 3),
-                new Row(new[] {1, 1}, 4),
-                new Column(new[] {1, 1}, 0),
-                new Column(new[] {5}, 1),
-                new Column(new[] {1, 1}, 2),
-                new Column(new[] {5}, 3),
-                new Column(new[] {1, 1}, 4)
+                PuzzleFactory.Instance().MakeLine<Row>(new[] {1, 1}, 0),
+                PuzzleFactory.Instance().MakeLine<Row>(new[] {5}, 1),
+                PuzzleFactory.Instance().MakeLine<Row>(new[] {1, 1}, 2),
+                PuzzleFactory.Instance().MakeLine<Row>(new[] {5}, 3),
+                PuzzleFactory.Instance().MakeLine<Row>(new[] {1, 1}, 4),
+                PuzzleFactory.Instance().MakeLine<Column>(new[] {1, 1}, 0),
+                PuzzleFactory.Instance().MakeLine<Column>(new[] {5}, 1),
+                PuzzleFactory.Instance().MakeLine<Column>(new[] {1, 1}, 2),
+                PuzzleFactory.Instance().MakeLine<Column>(new[] {5}, 3),
+                PuzzleFactory.Instance().MakeLine<Column>(new[] {1, 1}, 4)
             });
 
         }
@@ -32,7 +32,7 @@ namespace Griddler.Test
         [TestMethod]
         public void TestMethod1()
         {
-            Puzzle.Solve();
+            PuzzleSolver.Instance().Solve(Puzzle);
             int[,] expected = { { -1, 1, -1, 1, -1 }, { 1, 1, 1, 1, 1 }, { -1, 1, -1, 1, -1 }, { 1, 1, 1, 1, 1 }, { -1, 1, -1, 1, -1 } };
             
             foreach (var cell in Puzzle.Cells)
@@ -45,7 +45,7 @@ namespace Griddler.Test
         [TestMethod]
         public void TestMethod2()
         {
-            var list = Puzzle.StringToList("1 , 1 , 1 ; 1 ; 2 , 3");
+            var list = PuzzleFactory.StringToList("1 , 1 , 1 ; 1 ; 2 , 3");
             var expected = new List<int[]>();
             int[] a = { 1 , 1 , 1 };
             int[] b = { 1 };

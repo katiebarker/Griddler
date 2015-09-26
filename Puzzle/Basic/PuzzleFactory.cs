@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Griddler.PuzzleModel.Basic
+namespace Griddler.PuzzleModel
 {
     public class PuzzleFactory
     {
@@ -22,9 +23,8 @@ namespace Griddler.PuzzleModel.Basic
 
         public Puzzle MakePuzzle(int width, int height, List<Line> lines)
         {
-            Puzzle puzzle = new Puzzle();
-            puzzle.Width = width;
-            puzzle.Height = height;
+            Puzzle puzzle = new Puzzle(width, height);
+            
             puzzle.Lines = lines;
             puzzle.Cells = new Cell[width, height];
 
@@ -37,10 +37,10 @@ namespace Griddler.PuzzleModel.Basic
                 foreach (Column column in columns)
                 {
                     column.OwnerPuzzle = puzzle;
-                    var cell = new Cell(row, column);
+                    var cell = MakeCell(row, column);
                     puzzle.Cells[column.Key, row.Key] = cell;
-                    row.AddCell(cell);
-                    column.AddCell(cell);
+                    AddCell(row, cell);
+                    AddCell(column, cell);
                 }
             }
             CheckTotal(puzzle);
@@ -81,7 +81,7 @@ namespace Griddler.PuzzleModel.Basic
             }
         }
 
-        private static List<int[]> StringToList(string clues)
+        public static List<int[]> StringToList(string clues)
         {
             var clueList = new List<int[]>();
             var clueStrings = clues.Split(';');
@@ -111,7 +111,7 @@ namespace Griddler.PuzzleModel.Basic
             return clueList;
         }
 
-        private static List<Line> ToLines(int width, int height, List<int[]> rowClues, List<int[]> colClues)
+        private List<Line> ToLines(int width, int height, List<int[]> rowClues, List<int[]> colClues)
         {
             if (colClues.Count != width && rowClues.Count != height)
             {
@@ -120,14 +120,55 @@ namespace Griddler.PuzzleModel.Basic
             var lines = new List<Line>();
             for (var i = 0; i < height; i++)
             {
-                lines.Add(new Row(rowClues[i].ToList(), i));
+                var row = MakeLine<Row>(rowClues[i].ToList(), i);
+                lines.Add(row);
             }
             for (var i = 0; i < width; i++)
             {
-                lines.Add(new Column(colClues[i].ToList(), i));
+                lines.Add(MakeLine<Column>(colClues[i].ToList(), i));
             }
             return lines;
         }
 
+        public Line MakeLine<T>(IEnumerable<int> clues, int key) where T : Line, new()
+        {
+            T line = new T();
+            line.Key = key;
+            line.Cells = new List<Cell>();
+            line.Clues = new List<Clue>();
+            foreach (var clue in clues)
+            {
+                line.Clues.Add(new Clue(clue, line));
+            }
+
+            return line;
+        }        
+
+        public void AddCell(Line line, Cell cell)
+        {
+            line.Cells.Add(cell);
+            foreach (var clue in line.Clues)
+            {
+                clue.PossSections.First().Add(cell);
+            }
+        }
+
+        private Cell MakeCell(Row row, Column column)
+        {
+            var cell = new Cell();
+
+            cell.Row = row;
+            cell.Column = column;
+            cell.Key = new Point(cell.Column.Key, cell.Row.Key);
+
+            if (cell.Row.OwnerPuzzle != cell.Column.OwnerPuzzle)
+            {
+                throw new Exception("Incompatible Row and Column");
+            }
+
+            cell.ConfirmedClues = new Pair<Clue>(null, null);
+
+            return cell;
+        }
     }
 }

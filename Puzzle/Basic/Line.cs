@@ -7,29 +7,9 @@ namespace Griddler.PuzzleModel
 {
     public class Line
     {
-        protected Line(IEnumerable<int> clues, int key)
-        {
-            Key = key;
-            Cells = new List<Cell>();
-            Clues = new List<Clue>();
-            foreach (var clue in clues)
-            {
-                Clues.Add(new Clue(clue, this));
-            }
-        }
-
-        public void AddCell(Cell cell)
-        {
-            Cells.Add(cell);
-            foreach (var clue in Clues)
-            {
-                clue.PossSections.First().Add(cell);
-            }
-        }
-
-        public List<Cell> Cells { get; private set; }
-        public List<Clue> Clues { get; private set; }
-        public int Key { get; private set; }
+        public List<Cell> Cells { get; set; }
+        public List<Clue> Clues { get; set; }
+        public int Key { get; set; }
         public bool IsRow { get; set; }
         public Puzzle OwnerPuzzle { get; set; }        
 
