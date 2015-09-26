@@ -20,10 +20,6 @@ namespace Griddler.PuzzleModel
 
         public List<Line> Lines { get; set; }
 
-        public string ErrorMessage { get; set; }
-
-        public bool Changed { get; set; }
-
         public List<Row> Rows
         {
             get
@@ -52,31 +48,6 @@ namespace Griddler.PuzzleModel
             var clueValues = Lines[col + Height].Clues.Select(c => c.Value.ToString()).ToList();
             var clues = string.Join("\n",clueValues);            
             return clues;
-        }
-
-        public void ResetPuzzle()
-        {
-            foreach (Cell cell in Cells)
-            {
-                cell.Reset();
-            }
-            foreach (Line line in Lines)
-            {
-                line.Reset();
-            }
-        }
-
-        public int NumFilledCells
-        {
-            get
-            {
-                int num = 0;
-                foreach (var row in Lines.OfType<Row>())
-                {
-                    num += row.Cells.Count(c => c.Value != 0);
-                }
-                return num;
-            }
         }
     }
 }

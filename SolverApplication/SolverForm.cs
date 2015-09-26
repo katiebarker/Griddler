@@ -274,19 +274,21 @@ namespace Griddler.Solver
 
             var puzzle = PuzzleFactory.Instance().MakePuzzle(numberOfRows, numberOfColumns, rowString, colString);
 
-            if (Griddler.PuzzleModel.PuzzleSolver.Instance().Solve(puzzle))
+            PuzzleSolver solver = new PuzzleSolver(puzzle);
+            solver.Solve();
+
+            if (solver.Solve())
             {
                 UpdateDisplay(puzzle);
             }
             else
             {
-                MessageBox.Show(puzzle.ErrorMessage);               
-            }            
+                MessageBox.Show(solver.ErrorMessage);
+            }
         }
 
         private void testButton_Click(object sender, EventArgs e)
         {
-
             Puzzle puzzle;
             if (!testPuzzles.TryGetValue(chooseTest.Text, out puzzle))
             {
@@ -294,14 +296,18 @@ namespace Griddler.Solver
             }
             else
             {
-                if (Griddler.PuzzleModel.PuzzleSolver.Instance().Solve(puzzle))
+                PuzzleSolver solver = new PuzzleSolver(puzzle);
+                solver.Solve();
+
+                if (solver.Solve())
                 {
                     UpdateDisplay(puzzle);
                 }
                 else
                 {
-                    MessageBox.Show(puzzle.ErrorMessage);
-                }  
+                    MessageBox.Show(solver.ErrorMessage);
+                    UpdateDisplay(puzzle);
+                }
             }
 
         }

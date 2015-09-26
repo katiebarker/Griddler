@@ -9,6 +9,6 @@ namespace Griddler.PuzzleModel
     {
         Point Key { get; }
         string KeyString { get; }
-        int Value { get; }
+        int Value { get; set; }
     }
 }

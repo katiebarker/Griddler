@@ -147,10 +147,6 @@ namespace Griddler.PuzzleModel
         public void AddCell(Line line, Cell cell)
         {
             line.Cells.Add(cell);
-            foreach (var clue in line.Clues)
-            {
-                clue.PossSections.First().Add(cell);
-            }
         }
 
         private Cell MakeCell(Row row, Column column)
@@ -166,7 +162,6 @@ namespace Griddler.PuzzleModel
                 throw new Exception("Incompatible Row and Column");
             }
 
-            cell.ConfirmedClues = new Pair<Clue>(null, null);
 
             return cell;
         }

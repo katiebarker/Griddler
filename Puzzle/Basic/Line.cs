@@ -36,21 +36,5 @@ namespace Griddler.PuzzleModel
                 return Clues.Sum(clue => clue.Value);
             }
         }
-
-        public List<Clue> OpenClues
-        {
-            get
-            {
-                return new List<Clue>(Clues.Where(c => c.IsComplete == false));
-            }
-        }  
-
-        public void Reset()
-        {
-            foreach (Clue clue in Clues)
-            {
-                clue.Reset();
-            }
-        }
     }
 }

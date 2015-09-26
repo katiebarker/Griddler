@@ -32,7 +32,8 @@ namespace Griddler.Test
         [TestMethod]
         public void TestMethod1()
         {
-            PuzzleSolver.Instance().Solve(Puzzle);
+            PuzzleSolver solver = new PuzzleSolver(Puzzle);
+            solver.Solve();
             int[,] expected = { { -1, 1, -1, 1, -1 }, { 1, 1, 1, 1, 1 }, { -1, 1, -1, 1, -1 }, { 1, 1, 1, 1, 1 }, { -1, 1, -1, 1, -1 } };
             
             foreach (var cell in Puzzle.Cells)
