@@ -1,4 +1,5 @@
 ﻿using Griddler.PuzzleModel;
+using Griddler.PuzzleModel.Basic;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -260,50 +261,50 @@ namespace Griddler.Solver
         #region Events
         private void solveButton_Click(object sender, EventArgs e)
         {
-            try
+
+            var rowString = "";
+            foreach (var box in rowTextBoxs)
             {
-                var rowString = "";
-                foreach (var box in rowTextBoxs)
-                {
-                    rowString += box.Value.Text + ";";
-                }
-                var colString = "";
-                foreach (var box in rowTextBoxs)
-                {
-                    colString += box.Value.Text + ";";
-                }
+                rowString += box.Value.Text + ";";
+            }
+            var colString = "";
+            foreach (var box in rowTextBoxs)
+            {
+                colString += box.Value.Text + ";";
+            }
 
-                var puzzle = new Puzzle(numberOfRows, numberOfColumns, rowString, colString);
+            var puzzle = PuzzleFactory.Instance().MakePuzzle(numberOfRows, numberOfColumns, rowString, colString);
 
-                puzzle.Solve();
+            if (Griddler.PuzzleModel.Solver.Instance().Solve(puzzle))
+            {
                 UpdateDisplay(puzzle);
             }
-            catch (InvalidPuzzleException ex)
+            else
             {
-                MessageBox.Show(ex.Message);
-            }
+                MessageBox.Show(puzzle.ErrorMessage);               
+            }            
         }
 
         private void testButton_Click(object sender, EventArgs e)
         {
-            try
+
+            Puzzle puzzle;
+            if (!testPuzzles.TryGetValue(chooseTest.Text, out puzzle))
             {
-                Puzzle puzzle;
-                if (!testPuzzles.TryGetValue(chooseTest.Text, out puzzle))
+                MessageBox.Show("Please choose valid puzzle from the list");
+            }
+            else
+            {
+                if (Griddler.PuzzleModel.Solver.Instance().Solve(puzzle))
                 {
-                    throw new InvalidPuzzleException("Select Valid Puzzle from list");
+                    UpdateDisplay(puzzle);
                 }
                 else
                 {
-                    puzzle.Solve();
+                    MessageBox.Show(puzzle.ErrorMessage);
+                }  
+            }
 
-                    UpdateDisplay(puzzle);
-                }
-            }
-            catch (InvalidPuzzleException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void numRows_ValueChanged(object sender, EventArgs e)
