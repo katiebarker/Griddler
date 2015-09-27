@@ -83,7 +83,7 @@ namespace Griddler.PuzzleModel
                 {
                     foreach (var cell in section)
                     {
-                        if (!cells.Contains(cell) && cell. cell.Value == 0)
+                        if (!cells.Contains(cell) && cell.cell.Value == 0)
                         {
                             cells.Add(cell);
                         }
@@ -91,7 +91,7 @@ namespace Griddler.PuzzleModel
                 }
             }
             //Fill all blank cells with no possible clue
-            foreach (var cell in cellSolvers.Where(cell => !cells.Contains(cell) && cell. cell.Value == 0))
+            foreach (var cell in cellSolvers.Where(cell => !cells.Contains(cell) && cell.cell.Value == 0))
             {
                 cell.UpdateCell(-1);
             }

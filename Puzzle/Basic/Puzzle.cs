@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Griddler.PuzzleModel
 {
-    public class Puzzle : IPuzzle
+    public class Puzzle
     {
         public Puzzle(int width, int height)
         {

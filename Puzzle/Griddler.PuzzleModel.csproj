@@ -45,10 +45,7 @@
     <Compile Include="Basic\InvalidPuzzleException.cs" />
     <Compile Include="Basic\Pair.cs" />
     <Compile Include="Basic\PuzzleFactory.cs" />
-    <Compile Include="Interfaces\ICell.cs" />
-    <Compile Include="Interfaces\IClue.cs" />
     <Compile Include="Basic\Clue.cs" />
-    <Compile Include="Interfaces\IPuzzle.cs" />
     <Compile Include="Basic\Puzzle.cs" />
     <Compile Include="Basic\Line.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

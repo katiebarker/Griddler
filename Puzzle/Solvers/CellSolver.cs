@@ -6,17 +6,14 @@ using System.Threading.Tasks;
 
 namespace Griddler.PuzzleModel
 {
-    public class CellSolver
+    public class CellSolver 
     {
-        //public int Value { get; set; }
-
         public Pair<ClueSolver> ConfirmedClues;
         public Cell cell;
         public PuzzleSolver OwnerPuzzle;
 
         public CellSolver(Cell cell)
         {
-            // TODO: Complete member initialization
             this.cell = cell;
 
             ConfirmedClues = new Pair<ClueSolver>(null, null);
@@ -80,7 +77,7 @@ namespace Griddler.PuzzleModel
             {
                 if ( cell.Value != newValue)
                 {
-                    throw new Exception(String.Format("Conflict of Solution: ({0}, {1})", cell.Key.X + 1, cell.Key.Y + 1));
+                    throw new InvalidPuzzleException(String.Format("Conflict of Solution: ({0}, {1})", cell.Key.X + 1, cell.Key.Y + 1));
                 }
             }
         }

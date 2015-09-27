@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace Griddler.PuzzleModel
 {
-    public class Cell : ICell
+    public class Cell
     {
         public string KeyString
         {
@@ -17,15 +17,7 @@ namespace Griddler.PuzzleModel
         }
 
         public Point Key { get; set; }
-
-        public Puzzle OwnerPuzzle
-        {
-            get
-            {
-                return Row.OwnerPuzzle;
-            }
-        }
-
+        
         public int GetKey(Line line)
         {
             if (line == Row)
@@ -42,8 +34,7 @@ namespace Griddler.PuzzleModel
         public Row Row { get; set; }
 
         public Column Column { get; set; }
-
-
+        
         public int Value
         {
             get;

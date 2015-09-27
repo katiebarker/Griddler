@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Griddler.PuzzleModel
 {
-    public class Clue : IClue
+    public class Clue
     {
         public Clue(int value, Line ownerLine)
         {
