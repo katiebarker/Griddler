@@ -39,9 +39,18 @@ namespace Griddler.Solver
                 }
                 else
                 {
-                    puzzle.Solve();
+                    PuzzleSolver solver = new PuzzleSolver(puzzle);
+                    solver.Solve();
 
-                    UpdateDisplay(puzzle);
+                    if (solver.Solve())
+                    {
+                        UpdateDisplay(puzzle);
+                    }
+                    else
+                    {
+                        
+                        //MessageBox.Show(solver.ErrorMessage);
+                    }
                 }
             //}
             //catch (InvalidPuzzleException ex)
